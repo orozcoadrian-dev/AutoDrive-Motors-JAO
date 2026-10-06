@@ -3,6 +3,13 @@
 **Fecha:** 2026-10-06
 **Responsabilidad abordada:** DAO/repositorios, API REST, capa MVC web y funciones consumidoras de la API.
 
+## Revisión visual del diagrama de clases
+
+- Se reemplazó la exportación anterior por un diagrama UML clásico: cajas en blanco y negro con compartimentos de nombre, atributos y operaciones, líneas rectas y multiplicidades junto a cada relación.
+- El PDF de clases quedó condensado en una sola lámina A3 con MVC, API REST, DAO y entidades. Se renderizó e inspeccionó la página para comprobar que no hubiera superposiciones ni texto fuera de las cajas.
+- El PDF de secuencias se ajustó a la notación UML: actor, límite, control y entidad; instancias subrayadas, líneas de vida, barras de activación, llamadas síncronas, retornos discontinuos, autollamadas y bloques `alt` con guardas. Conserva una página por cada caso de uso para no mezclar tres flujos distintos.
+- `Mantenimiento` se distingue como pendiente con línea discontinua; no se presenta como una clase persistida ya implementada.
+
 ## Alcance revisado
 
 - Taller final: gestion de clientes, vehiculos, ventas, mantenimientos y conversion COP/USD mediante API externa.
@@ -11,14 +18,14 @@
 
 ## Entregables creados en este avance
 
-1. [Diagrama de clases de implementacion](../07_Diagrama_de_clases_aplicacion/Diagrama_de_clases_aplicacion.md) y su exportacion [PDF](../../../output/pdf/diagrama-de-clases-aplicacion.pdf). Incluye controladores REST, servicios, repositorios DAO/JPA, DTOs, entidades, manejo de errores e integracion de tasa de cambio propuesta.
-2. [Diagramas de secuencia](../08_Diagramas_de_secuencia/Diagramas_de_secuencia.md) y su exportacion [PDF](../../../output/pdf/diagramas-de-secuencia.pdf), para registrar venta, registrar mantenimiento y convertir el valor de un vehiculo a USD.
+1. [Diagrama de clases de implementacion (PDF)](../07_Diagrama_de_clases_aplicacion/Diagrama_de_clases_aplicacion.pdf). Incluye controladores REST, servicios, repositorios DAO/JPA, DTOs, entidades y manejo de errores.
+2. [Diagramas de secuencia (PDF)](../08_Diagramas_de_secuencia/Diagramas_de_secuencia.pdf), para registrar venta, registrar mantenimiento y convertir el valor de un vehiculo a USD.
 3. Proyecto Spring Boot inicial en `pom.xml` con una implementacion MVC parcial y ejecutable: entidades JPA, DAO Spring Data, servicios transaccionales, DTOs validados, controladores REST y controladores de vistas.
 4. Vistas Thymeleaf para inicio, clientes, vehiculos y ventas. `static/js/app.js` consume la API REST de la misma aplicacion con `fetch`, muestra estados de carga/error/vacio y no inserta texto de la API como HTML.
 5. Persistencia implementada: `Cliente`, `Vehiculo` y `Venta`. El mantenimiento y la conversion COP/USD se conservan como pendientes de integracion; no se simula una API externa ni se persiste una entidad que aun no tiene contrato validado por el equipo.
 6. Prueba unitaria de la regla de venta: descuento del 5 % sobre valores mayores de $100.000.000 COP y bloqueo de venta si el vehiculo no esta disponible.
 
-Los diagramas se mantienen en Mermaid dentro de Markdown para versionarlos en GitHub y ahora tambien se entregan como PDF. La exportacion se reviso visualmente pagina por pagina: tres paginas por documento, sin texto recortado ni elementos superpuestos.
+Este avance describe el alcance y la trazabilidad de los PDF UML. La exportación se revisó visualmente: una página A3 para clases y tres páginas A3 para secuencias, sin texto recortado ni elementos superpuestos.
 
 ## Flujo MVC implementado
 
@@ -32,7 +39,7 @@ Los diagramas se mantienen en Mermaid dentro de Markdown para versionarlos en Gi
 
 - Se verifico que `Taller final.pdf` recibido y `01_Documentacion/01_problema_raiz/Taller-final.pdf` tienen el mismo SHA-256: `39C2D31E99E4F6DE528C7959315CD1568A25BDED7F2CEB6F16BCDD7FF2E85D01`.
 - Se extrajo y se reviso el texto de los PDF relevantes; se inspeccionaron visualmente las paginas del taller y las tablas de requisitos funcionales y no funcionales.
-- Se genero y se renderizo cada PDF con ReportLab/Poppler para inspeccion visual. Ambos tienen tres paginas y presentan relaciones/mensajes separados de forma legible.
+- Se generaron y renderizaron los PDF para inspección visual. El diagrama de clases tiene una página; las secuencias tienen tres, una por caso de uso.
 - `pom.xml` se valido como XML y `static/js/app.js` paso `node --check`.
 - Se verifico por inspeccion estatica que las rutas usadas por las vistas existen en los controladores REST y que los DAO extienden `JpaRepository`.
 - Se agrego la prueba `VentaServiceTest`, pero no se ejecuto porque Maven no esta instalado en el entorno y no se descargaron ni ejecutaron dependencias del proyecto sin un aislamiento de ejecucion adecuado.
