@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoDrive Motors | Ventas</title>
+    <link rel="stylesheet" href="/css/app.css">
+    <script defer src="/js/app.js"></script>
+</head>
+<body data-page="ventas">
+<header class="encabezado">
+    <a class="marca" href="/">AutoDrive Motors</a>
+    <nav aria-label="Navegación principal">
+        <a href="/">Inicio</a>
+        <a href="/clientes">Clientes</a>
+        <a href="/vehiculos">Vehículos</a>
+        <a aria-current="page" href="/ventas">Ventas</a>
+    </nav>
+</header>
+<main class="contenedor dos-columnas">
+    <section class="panel">
+        <p class="eyebrow">Regla de negocio</p>
+        <h1>Registrar venta</h1>
+        <p class="ayuda">El sistema toma el precio vigente y aplica 5 % de descuento cuando supera $100.000.000 COP.</p>
+        <form id="form-venta">
+            <label>Cliente
+                <select id="cliente-id" name="clienteId" required><option value="">Cargando clientes…</option></select>
+            </label>
+            <label>Vehículo disponible
+                <select id="vehiculo-id" name="vehiculoId" required><option value="">Cargando vehículos…</option></select>
+            </label>
+            <button type="submit">Registrar venta</button>
+        </form>
+        <p id="mensaje-ventas" class="mensaje" role="status" aria-live="polite"></p>
+    </section>
+    <section class="panel tabla-panel">
+        <div class="titulo-seccion">
+            <div>
+                <p class="eyebrow">Consulta REST</p>
+                <h1>Ventas registradas</h1>
+            </div>
+            <button id="recargar-ventas" class="secundario" type="button">Actualizar</button>
+        </div>
+        <div class="tabla-contenedor" aria-live="polite">
+            <table>
+                <thead><tr><th>Fecha</th><th>Cliente</th><th>Vehículo</th><th>Descuento</th><th>Total</th></tr></thead>
+                <tbody id="tabla-ventas"></tbody>
+            </table>
+        </div>
+    </section>
+</main>
+</body>
+</html>

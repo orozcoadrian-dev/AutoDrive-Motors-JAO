@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoDrive Motors | Inicio</title>
+    <link rel="stylesheet" href="/css/app.css">
+    <script defer src="/js/app.js"></script>
+</head>
+<body data-page="inicio">
+<header class="encabezado">
+    <a class="marca" href="/">AutoDrive Motors</a>
+    <nav aria-label="Navegación principal">
+        <a aria-current="page" href="/">Inicio</a>
+        <a href="/clientes">Clientes</a>
+        <a href="/vehiculos">Vehículos</a>
+        <a href="/ventas">Ventas</a>
+    </nav>
+</header>
+<main class="contenedor">
+    <section class="hero">
+        <p class="eyebrow">Sistema de Gestión Vehicular</p>
+        <h1>Gestione clientes, inventario y ventas.</h1>
+        <p>Esta demostración conecta vistas Thymeleaf con la API REST de la aplicación.</p>
+    </section>
+
+    <section class="metricas" aria-label="Resumen operativo">
+        <article class="tarjeta-metrica">
+            <p>Clientes registrados</p>
+            <strong id="total-clientes">—</strong>
+        </article>
+        <article class="tarjeta-metrica">
+            <p>Vehículos disponibles</p>
+            <strong id="total-disponibles">—</strong>
+        </article>
+        <article class="tarjeta-metrica">
+            <p>Ventas realizadas</p>
+            <strong id="total-ventas">—</strong>
+        </article>
+    </section>
+    <p id="mensaje-inicio" class="mensaje" role="status" aria-live="polite"></p>
+</main>
+</body>
+</html>

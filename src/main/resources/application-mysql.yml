@@ -1,0 +1,13 @@
+spring:
+  config:
+    activate:
+      on-profile: mysql
+  datasource:
+    url: ${AUTODRIVE_DB_URL}
+    username: ${AUTODRIVE_DB_USER}
+    password: ${AUTODRIVE_DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false

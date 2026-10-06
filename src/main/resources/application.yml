@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: autodrive-motors
+  profiles:
+    default: dev
+  thymeleaf:
+    cache: false
+
+server:
+  error:
+    include-message: never
