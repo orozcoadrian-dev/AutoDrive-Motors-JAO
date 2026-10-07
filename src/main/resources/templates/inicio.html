@@ -1,44 +1,126 @@
 <!doctype html>
-<html lang="es">
+<html lang="es" xmlns:th="https://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AutoDrive Motors | Inicio</title>
+    <meta name="description" content="AutoDrive Motors JAO: inventario, clientes y ventas del taller.">
+    <meta name="theme-color" content="#070b0f">
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+    <meta property="og:title" content="AutoDrive Motors JAO">
+    <meta property="og:description" content="Gestión de inventario, clientes y ventas de AutoDrive Motors JAO.">
+    <meta property="og:image" content="/images/autodrive-motors-hero.webp">
+    <title>AutoDrive Motors JAO | Inicio</title>
     <link rel="stylesheet" href="/css/app.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
     <script defer src="/js/app.js"></script>
+    <script defer src="/js/animations.js"></script>
 </head>
 <body data-page="inicio">
+<a class="skip-link" href="#contenido">Saltar al contenido</a>
 <header class="encabezado">
-    <a class="marca" href="/">AutoDrive Motors</a>
-    <nav aria-label="Navegación principal">
-        <a aria-current="page" href="/">Inicio</a>
-        <a href="/clientes">Clientes</a>
-        <a href="/vehiculos">Vehículos</a>
-        <a href="/ventas">Ventas</a>
-    </nav>
+    <div class="encabezado__interior">
+        <a class="marca" href="/" aria-label="AutoDrive Motors JAO, inicio"><span class="marca__monograma">AD</span>AutoDrive <span>Motors</span></a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navegacion-principal" data-nav-toggle>
+            <span class="sr-only">Abrir navegación</span><span aria-hidden="true"></span><span aria-hidden="true"></span>
+        </button>
+        <nav id="navegacion-principal" class="navegacion" aria-label="Navegación principal" data-nav>
+            <a aria-current="page" href="/">Inicio</a>
+            <a href="#inventario">Inventario</a>
+            <a href="#categorias">Categorías</a>
+            <a href="#nosotros">Nosotros</a>
+            <a class="navegacion__cta" href="/vehiculos">Ver catálogo</a>
+        </nav>
+        <form class="salir-form" th:action="@{/logout}" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <button type="submit">Salir</button>
+        </form>
+    </div>
 </header>
-<main class="contenedor">
-    <section class="hero">
-        <p class="eyebrow">Sistema de Gestión Vehicular</p>
-        <h1>Gestione clientes, inventario y ventas.</h1>
-        <p>Esta demostración conecta vistas Thymeleaf con la API REST de la aplicación.</p>
+<main id="contenido" class="inicio-main">
+    <section class="hero-autodrive" aria-labelledby="hero-titulo">
+        <div class="hero-autodrive__art" aria-hidden="true">
+            <img src="/images/autodrive-motors-hero.webp" width="2172" height="724" alt="" fetchpriority="high" decoding="async">
+        </div>
+        <div class="hero-autodrive__sombra" aria-hidden="true"></div>
+        <div class="hero-autodrive__copy">
+            <p class="eyebrow eyebrow--luz" data-hero-enter>Gestión vehicular · JAO</p>
+            <h1 id="hero-titulo" data-hero-enter>Inventario, clientes y ventas del taller.</h1>
+            <p data-hero-enter>Registramos los vehículos que entran, quién los compra y cuándo pasan por mantenimiento.</p>
+            <div class="hero-autodrive__acciones" data-hero-enter>
+                <a class="boton boton--primario" href="/vehiculos">Ver inventario <span aria-hidden="true">→</span></a>
+                <a class="boton boton--fantasma" href="#categorias">Ver secciones</a>
+            </div>
+        </div>
+        <div class="hero-autodrive__lineas" aria-hidden="true"><span></span><span></span><span></span></div>
     </section>
 
-    <section class="metricas" aria-label="Resumen operativo">
-        <article class="tarjeta-metrica">
-            <p>Clientes registrados</p>
-            <strong id="total-clientes">—</strong>
-        </article>
-        <article class="tarjeta-metrica">
-            <p>Vehículos disponibles</p>
-            <strong id="total-disponibles">—</strong>
-        </article>
-        <article class="tarjeta-metrica">
-            <p>Ventas realizadas</p>
-            <strong id="total-ventas">—</strong>
-        </article>
+    <section class="metricas metricas--marca" aria-label="Resumen operativo">
+        <article class="tarjeta-metrica"><p>Clientes registrados</p><strong id="total-clientes">—</strong></article>
+        <article class="tarjeta-metrica"><p>Vehículos disponibles</p><strong id="total-disponibles">—</strong></article>
+        <article class="tarjeta-metrica"><p>Ventas realizadas</p><strong id="total-ventas">—</strong></article>
     </section>
-    <p id="mensaje-inicio" class="mensaje" role="status" aria-live="polite"></p>
+
+    <section id="inventario" class="seccion seccion--inventario" aria-labelledby="inventario-titulo">
+        <div class="seccion__cabecera">
+            <p class="eyebrow">Inventario</p>
+            <h2 id="inventario-titulo">Vehículos disponibles</h2>
+            <p>Lista tomada directamente de la base de datos.</p>
+        </div>
+        <div id="vehiculos-destacados" class="vehiculos-destacados" aria-live="polite" aria-busy="true">
+            <p class="estado-inventario">Consultando inventario disponible…</p>
+        </div>
+        <p id="mensaje-inicio" class="mensaje" role="status" aria-live="polite"></p>
+    </section>
+
+    <section id="categorias" class="seccion seccion--categorias" aria-labelledby="categorias-titulo">
+        <div class="seccion__cabecera">
+            <p class="eyebrow eyebrow--amarillo">Secciones</p>
+            <h2 id="categorias-titulo">Qué se maneja en el taller</h2>
+        </div>
+        <div class="composicion-categorias">
+            <article class="categoria categoria--frenos"><span class="categoria__numero">01</span><h3>Frenos</h3><p>Pastillas, discos y revisión de sistema de frenado.</p></article>
+            <article class="categoria categoria--transmision"><span class="categoria__numero">02</span><h3>Transmisión</h3><p>Cadena, piñones y cambios.</p></article>
+            <article class="categoria categoria--motor"><span class="categoria__numero">03</span><h3>Motor</h3><p>Revisiones y reparaciones de motor.</p></article>
+            <article class="categoria categoria--proteccion"><span class="categoria__numero">04</span><h3>Protección</h3><p>Cascos, guantes y accesorios.</p></article>
+        </div>
+    </section>
+
+    <section id="nosotros" class="seccion carretera" aria-labelledby="carretera-titulo">
+        <div class="carretera__pista" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="carretera__contenido">
+            <p class="eyebrow eyebrow--luz">Sobre el sistema</p>
+            <h2 id="carretera-titulo">Todo en una sola aplicación</h2>
+            <p>Antes se llevaba en hojas sueltas; ahora inventario, clientes y ventas se consultan en el mismo lugar.</p>
+        </div>
+        <div class="carretera__disco" aria-hidden="true"></div>
+    </section>
+
+    <section class="seccion rendimiento" aria-labelledby="rendimiento-titulo">
+        <div class="seccion__cabecera"><p class="eyebrow eyebrow--rojo">AutoDrive Motors</p><h2 id="rendimiento-titulo">Cómo trabajamos</h2></div>
+        <div class="pilares">
+            <article class="pilar"><span>01</span><h3>Calidad</h3><p>Datos del inventario siempre a la vista.</p></article>
+            <article class="pilar"><span>02</span><h3>Confianza</h3><p>Una moto vendida no se puede volver a vender.</p></article>
+            <article class="pilar"><span>03</span><h3>Rendimiento</h3><p>Registro de ventas y mantenimientos en pocos pasos.</p></article>
+        </div>
+    </section>
+
+    <section class="cta-final" aria-labelledby="cta-titulo">
+        <div class="cta-final__interior">
+            <p class="eyebrow eyebrow--amarillo">AutoDrive Motors JAO</p>
+            <h2 id="cta-titulo">Registrar una venta</h2>
+            <p>Revisa lo que hay disponible o carga los datos pendientes.</p>
+            <div class="hero-autodrive__acciones">
+                <a class="boton boton--primario" href="/vehiculos">Ver inventario <span aria-hidden="true">→</span></a>
+                <a class="boton boton--fantasma" href="/ventas">Ir a ventas</a>
+            </div>
+        </div>
+    </section>
 </main>
+<footer class="pie-pagina">
+    <div><a class="marca" href="/"><span class="marca__monograma">AD</span>AutoDrive <span>Motors</span></a><p>Inventario, clientes y ventas en una misma aplicación.</p></div>
+    <nav aria-label="Navegación secundaria"><a href="/vehiculos">Inventario</a><a href="/clientes">Clientes</a><a href="/ventas">Ventas</a><a href="/mantenimientos">Mantenimientos</a></nav>
+</footer>
 </body>
 </html>

@@ -1,67 +1,109 @@
 <!doctype html>
-<html lang="es">
+<html lang="es" xmlns:th="https://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
     <title>AutoDrive Motors | Vehículos</title>
     <link rel="stylesheet" href="/css/app.css">
     <script defer src="/js/app.js"></script>
 </head>
 <body data-page="vehiculos">
+<a class="skip-link" href="#contenido">Saltar al contenido</a>
 <header class="encabezado">
-    <a class="marca" href="/">AutoDrive Motors</a>
-    <nav aria-label="Navegación principal">
-        <a href="/">Inicio</a>
-        <a href="/clientes">Clientes</a>
-        <a aria-current="page" href="/vehiculos">Vehículos</a>
-        <a href="/ventas">Ventas</a>
-    </nav>
+    <div class="encabezado__interior">
+        <a class="marca" href="/" aria-label="AutoDrive Motors JAO, inicio"><span class="marca__monograma">AD</span>AutoDrive <span>Motors</span></a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navegacion-principal" data-nav-toggle>
+            <span class="sr-only">Abrir navegación</span><span aria-hidden="true"></span><span aria-hidden="true"></span>
+        </button>
+        <nav id="navegacion-principal" class="navegacion" aria-label="Navegación principal" data-nav>
+            <a href="/">Inicio</a><a href="/clientes">Clientes</a><a aria-current="page" href="/vehiculos">Inventario</a><a href="/ventas">Ventas</a><a href="/mantenimientos">Mantenimientos</a>
+        </nav>
+        <form class="salir-form" th:action="@{/logout}" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <button type="submit">Salir</button>
+        </form>
+    </div>
 </header>
-<main class="contenedor dos-columnas">
-    <section class="panel">
-        <p class="eyebrow">Inventario</p>
-        <h1>Registrar vehículo</h1>
-        <form id="form-vehiculo">
-            <label>Placa
-                <input name="placa" pattern="[A-Za-z0-9-]{5,10}" maxlength="10" required placeholder="ABC123">
-            </label>
-            <label>Marca
-                <input name="marca" minlength="2" maxlength="50" required>
-            </label>
-            <label>Modelo
-                <input name="modelo" minlength="1" maxlength="80" required>
-            </label>
-            <label>Año
-                <input name="anio" type="number" min="1900" max="2100" required>
-            </label>
-            <label>Precio COP
-                <input name="precioCop" type="number" min="1" step="1" required>
-            </label>
-            <button type="submit">Guardar vehículo</button>
-        </form>
-        <p id="mensaje-vehiculos" class="mensaje" role="status" aria-live="polite"></p>
-    </section>
-    <section class="panel tabla-panel">
-        <div class="titulo-seccion">
-            <div>
-                <p class="eyebrow">Consulta REST</p>
-                <h1>Inventario</h1>
+<main id="contenido" class="contenedor">
+    <header class="cabecera-pagina">
+        <h1>Inventario</h1>
+        <p>Vehículos registrados con su precio y estado. Solo se pueden eliminar los que siguen disponibles.</p>
+    </header>
+    <div class="dos-columnas">
+        <section class="panel" aria-labelledby="titulo-form-vehiculo">
+            <h2 id="titulo-form-vehiculo">Registrar vehículo</h2>
+            <form id="form-vehiculo" class="formulario" novalidate>
+                <div class="campo campo--ancho-5">
+                    <label for="placa">Placa</label>
+                    <input id="placa" name="placa" pattern="[A-Za-z0-9-]{5,10}" maxlength="10" required autocomplete="off" autocapitalize="characters" spellcheck="false"
+                           data-mensaje-patron="Use entre 5 y 10 letras o números, sin espacios." aria-describedby="ayuda-placa error-placa">
+                    <p class="campo__ayuda" id="ayuda-placa">Carros: ABC123. Motos: ABC12D.</p>
+                    <p class="campo__error" id="error-placa" hidden></p>
+                </div>
+                <div class="campo campo--ancho-7">
+                    <label for="marca">Marca</label>
+                    <input id="marca" name="marca" minlength="2" maxlength="50" required autocomplete="off" aria-describedby="ayuda-marca error-marca">
+                    <p class="campo__ayuda" id="ayuda-marca">Por ejemplo: Yamaha, Mazda.</p>
+                    <p class="campo__error" id="error-marca" hidden></p>
+                </div>
+                <div class="campo">
+                    <label for="modelo">Modelo</label>
+                    <input id="modelo" name="modelo" minlength="1" maxlength="80" required autocomplete="off" aria-describedby="ayuda-modelo error-modelo">
+                    <p class="campo__ayuda" id="ayuda-modelo">Línea o referencia, como FZ 2.0 o CX-30.</p>
+                    <p class="campo__error" id="error-modelo" hidden></p>
+                </div>
+                <div class="campo campo--ancho-4">
+                    <label for="anio">Año</label>
+                    <input id="anio" name="anio" type="number" inputmode="numeric" min="1900" max="2100" required aria-describedby="ayuda-anio error-anio">
+                    <p class="campo__ayuda" id="ayuda-anio">Cuatro dígitos.</p>
+                    <p class="campo__error" id="error-anio" hidden></p>
+                </div>
+                <div class="campo campo--ancho-8">
+                    <label for="precio-cop">Precio en COP</label>
+                    <input id="precio-cop" name="precioCop" type="number" inputmode="numeric" min="1" step="1" required aria-describedby="ayuda-precio error-precioCop">
+                    <p class="campo__ayuda" id="ayuda-precio">Pesos colombianos, sin puntos ni comas.</p>
+                    <p class="campo__error" id="error-precioCop" hidden></p>
+                </div>
+                <button type="submit" data-texto-envio="Guardando…">Guardar vehículo</button>
+            </form>
+            <p id="mensaje-vehiculos" class="mensaje" role="status" aria-live="polite"></p>
+            <p class="ayuda ayuda--compacta">La conversión a USD usa una tasa externa consultada en el momento. <a href="https://www.exchangerate-api.com" rel="noopener noreferrer" target="_blank">Tasas de ExchangeRate-API</a>.</p>
+        </section>
+        <section class="panel tabla-panel" aria-labelledby="titulo-tabla-vehiculos">
+            <div class="titulo-seccion">
+                <h2 id="titulo-tabla-vehiculos">Vehículos registrados</h2>
+                <button id="recargar-vehiculos" class="secundario" type="button">Actualizar</button>
             </div>
-            <button id="recargar-vehiculos" class="secundario" type="button">Actualizar</button>
-        </div>
-        <form id="form-filtro-marca" class="filtro">
-            <label for="marca-filtro">Filtrar por marca</label>
-            <input id="marca-filtro" name="marca" maxlength="50" placeholder="Ej. Mazda">
-            <button class="secundario" type="submit">Buscar</button>
-            <button id="limpiar-filtro" class="enlace-boton" type="button">Ver todos</button>
-        </form>
-        <div class="tabla-contenedor" aria-live="polite">
-            <table>
-                <thead><tr><th>Placa</th><th>Vehículo</th><th>Año</th><th>Precio</th><th>Estado</th><th><span class="sr-only">Acción</span></th></tr></thead>
-                <tbody id="tabla-vehiculos"></tbody>
-            </table>
-        </div>
-    </section>
+            <form id="form-filtro-marca" class="filtro">
+                <div class="campo">
+                    <label for="marca-filtro">Filtrar por marca</label>
+                    <input id="marca-filtro" name="marca" maxlength="50" autocomplete="off" placeholder="Ej. Mazda">
+                </div>
+                <button class="secundario" type="submit">Buscar</button>
+                <button id="limpiar-filtro" class="enlace-boton" type="button">Ver todos</button>
+            </form>
+            <div class="tabla-contenedor" role="region" aria-labelledby="titulo-tabla-vehiculos" tabindex="0" aria-live="polite" aria-busy="true">
+                <table>
+                    <caption class="sr-only">Vehículos del inventario con placa, año, precio y estado</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Placa</th>
+                            <th scope="col">Vehículo</th>
+                            <th class="num" scope="col">Año</th>
+                            <th class="num" scope="col">Precio</th>
+                            <th scope="col">Estado</th>
+                            <th class="acciones" scope="col"><span class="sr-only">Acciones</span></th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-vehiculos">
+                        <tr class="estado-tabla"><td colspan="6"><p class="estado-tabla__texto">Cargando inventario…</p></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
 </main>
 </body>
 </html>

@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="es" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+    <title>AutoDrive Motors | Mantenimientos</title>
+    <link rel="stylesheet" href="/css/app.css">
+    <script defer src="/js/app.js"></script>
+</head>
+<body data-page="mantenimientos">
+<a class="skip-link" href="#contenido">Saltar al contenido</a>
+<header class="encabezado">
+    <div class="encabezado__interior">
+        <a class="marca" href="/" aria-label="AutoDrive Motors JAO, inicio"><span class="marca__monograma">AD</span>AutoDrive <span>Motors</span></a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navegacion-principal" data-nav-toggle>
+            <span class="sr-only">Abrir navegación</span><span aria-hidden="true"></span><span aria-hidden="true"></span>
+        </button>
+        <nav id="navegacion-principal" class="navegacion" aria-label="Navegación principal" data-nav>
+            <a href="/">Inicio</a><a href="/clientes">Clientes</a><a href="/vehiculos">Inventario</a><a href="/ventas">Ventas</a><a aria-current="page" href="/mantenimientos">Mantenimientos</a>
+        </nav>
+        <form class="salir-form" th:action="@{/logout}" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <button type="submit">Salir</button>
+        </form>
+    </div>
+</header>
+<main id="contenido" class="contenedor">
+    <header class="cabecera-pagina">
+        <h1>Mantenimientos</h1>
+        <p>Historial de trabajos del taller. Al registrar uno, el vehículo pasa a «en mantenimiento» y deja de ofrecerse para la venta.</p>
+    </header>
+    <div class="dos-columnas">
+        <section class="panel" aria-labelledby="titulo-form-mantenimiento">
+            <h2 id="titulo-form-mantenimiento">Registrar mantenimiento</h2>
+            <form id="form-mantenimiento" class="formulario" novalidate>
+                <div class="campo">
+                    <label for="mantenimiento-vehiculo-id">Vehículo</label>
+                    <select id="mantenimiento-vehiculo-id" name="vehiculoId" required aria-describedby="ayuda-mant-vehiculo error-vehiculoId"><option value="">Cargando vehículos…</option></select>
+                    <p class="campo__ayuda" id="ayuda-mant-vehiculo">No se listan los vehículos vendidos.</p>
+                    <p class="campo__error" id="error-vehiculoId" hidden></p>
+                </div>
+                <div class="campo campo--ancho-6">
+                    <label for="fecha-mantenimiento">Fecha</label>
+                    <input id="fecha-mantenimiento" name="fechaMantenimiento" type="date" required aria-describedby="ayuda-fecha error-fechaMantenimiento">
+                    <p class="campo__ayuda" id="ayuda-fecha">Día en que ingresó al taller.</p>
+                    <p class="campo__error" id="error-fechaMantenimiento" hidden></p>
+                </div>
+                <div class="campo campo--ancho-6">
+                    <label for="costo">Costo en COP</label>
+                    <input id="costo" name="costo" type="number" inputmode="numeric" min="0" step="1" required aria-describedby="ayuda-costo error-costo">
+                    <p class="campo__ayuda" id="ayuda-costo">Escriba 0 si no tuvo costo.</p>
+                    <p class="campo__error" id="error-costo" hidden></p>
+                </div>
+                <div class="campo">
+                    <label for="descripcion">Descripción del trabajo</label>
+                    <textarea id="descripcion" name="descripcion" maxlength="500" rows="4" required aria-describedby="ayuda-descripcion error-descripcion"></textarea>
+                    <p class="campo__ayuda" id="ayuda-descripcion">Qué se revisó o se cambió. Máximo 500 caracteres.</p>
+                    <p class="campo__error" id="error-descripcion" hidden></p>
+                </div>
+                <button type="submit" data-texto-envio="Registrando…">Registrar mantenimiento</button>
+            </form>
+            <p id="mensaje-mantenimientos" class="mensaje" role="status" aria-live="polite"></p>
+        </section>
+        <section class="panel tabla-panel" aria-labelledby="titulo-tabla-mantenimientos">
+            <div class="titulo-seccion">
+                <h2 id="titulo-tabla-mantenimientos">Historial</h2>
+                <button id="recargar-mantenimientos" class="secundario" type="button">Actualizar</button>
+            </div>
+            <div class="tabla-contenedor" role="region" aria-labelledby="titulo-tabla-mantenimientos" tabindex="0" aria-live="polite" aria-busy="true">
+                <table>
+                    <caption class="sr-only">Mantenimientos con fecha, vehículo, descripción y costo</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Fecha</th>
+                            <th scope="col">Vehículo</th>
+                            <th scope="col">Descripción</th>
+                            <th class="num" scope="col">Costo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-mantenimientos">
+                        <tr class="estado-tabla"><td colspan="4"><p class="estado-tabla__texto">Cargando mantenimientos…</p></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</main>
+</body>
+</html>
