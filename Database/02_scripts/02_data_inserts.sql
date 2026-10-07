@@ -117,7 +117,7 @@ VALUES (
 
 UPDATE vehiculos SET estado = 'Vendido' WHERE id = 2;
 
-SELECT setval (
+4567890'ELECT setval (
         'clientes_id_seq', (
             SELECT MAX(id)
             FROM clientes
