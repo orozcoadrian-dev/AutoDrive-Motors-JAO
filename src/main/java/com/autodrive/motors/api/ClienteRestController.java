@@ -4,8 +4,10 @@ import com.autodrive.motors.dto.ClienteRequest;
 import com.autodrive.motors.dto.ClienteResponse;
 import com.autodrive.motors.service.ClienteService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+@Validated
 @RestController
 @RequestMapping("/api/clientes")
 public class ClienteRestController {
@@ -30,7 +33,7 @@ public class ClienteRestController {
     public List<ClienteResponse> listar() { return clienteService.listar(); }
 
     @GetMapping("/{id}")
-    public ClienteResponse obtener(@PathVariable Long id) { return clienteService.obtenerPorId(id); }
+    public ClienteResponse obtener(@PathVariable @Positive Long id) { return clienteService.obtenerPorId(id); }
 
     @PostMapping
     public ResponseEntity<ClienteResponse> registrar(@Valid @RequestBody ClienteRequest request) {
@@ -38,12 +41,12 @@ public class ClienteRestController {
     }
 
     @PutMapping("/{id}")
-    public ClienteResponse actualizar(@PathVariable Long id, @Valid @RequestBody ClienteRequest request) {
+    public ClienteResponse actualizar(@PathVariable @Positive Long id, @Valid @RequestBody ClienteRequest request) {
         return clienteService.actualizar(id, request);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+    public ResponseEntity<Void> eliminar(@PathVariable @Positive Long id) {
         clienteService.eliminar(id);
         return ResponseEntity.noContent().build();
     }

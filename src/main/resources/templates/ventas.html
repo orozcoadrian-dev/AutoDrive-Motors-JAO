@@ -1,53 +1,85 @@
 <!doctype html>
-<html lang="es">
+<html lang="es" xmlns:th="https://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
     <title>AutoDrive Motors | Ventas</title>
     <link rel="stylesheet" href="/css/app.css">
     <script defer src="/js/app.js"></script>
 </head>
 <body data-page="ventas">
+<a class="skip-link" href="#contenido">Saltar al contenido</a>
 <header class="encabezado">
-    <a class="marca" href="/">AutoDrive Motors</a>
-    <nav aria-label="Navegación principal">
-        <a href="/">Inicio</a>
-        <a href="/clientes">Clientes</a>
-        <a href="/vehiculos">Vehículos</a>
-        <a aria-current="page" href="/ventas">Ventas</a>
-    </nav>
-</header>
-<main class="contenedor dos-columnas">
-    <section class="panel">
-        <p class="eyebrow">Regla de negocio</p>
-        <h1>Registrar venta</h1>
-        <p class="ayuda">El sistema toma el precio vigente y aplica 5 % de descuento cuando supera $100.000.000 COP.</p>
-        <form id="form-venta">
-            <label>Cliente
-                <select id="cliente-id" name="clienteId" required><option value="">Cargando clientes…</option></select>
-            </label>
-            <label>Vehículo disponible
-                <select id="vehiculo-id" name="vehiculoId" required><option value="">Cargando vehículos…</option></select>
-            </label>
-            <button type="submit">Registrar venta</button>
+    <div class="encabezado__interior">
+        <a class="marca" href="/" aria-label="AutoDrive Motors JAO, inicio"><span class="marca__monograma">AD</span>AutoDrive <span>Motors</span></a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navegacion-principal" data-nav-toggle>
+            <span class="sr-only">Abrir navegación</span><span aria-hidden="true"></span><span aria-hidden="true"></span>
+        </button>
+        <nav id="navegacion-principal" class="navegacion" aria-label="Navegación principal" data-nav>
+            <a href="/">Inicio</a><a href="/clientes">Clientes</a><a href="/vehiculos">Inventario</a><a aria-current="page" href="/ventas">Ventas</a><a href="/mantenimientos">Mantenimientos</a>
+        </nav>
+        <form class="salir-form" th:action="@{/logout}" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <button type="submit">Salir</button>
         </form>
-        <p id="mensaje-ventas" class="mensaje" role="status" aria-live="polite"></p>
-    </section>
-    <section class="panel tabla-panel">
-        <div class="titulo-seccion">
-            <div>
-                <p class="eyebrow">Consulta REST</p>
-                <h1>Ventas registradas</h1>
+    </div>
+</header>
+<main id="contenido" class="contenedor">
+    <header class="cabecera-pagina">
+        <h1>Ventas</h1>
+        <p>Cada venta toma el precio vigente del vehículo y lo marca como vendido. Si el precio supera $100.000.000 COP se aplica un 5 % de descuento.</p>
+    </header>
+    <div class="dos-columnas">
+        <section class="panel" aria-labelledby="titulo-form-venta">
+            <h2 id="titulo-form-venta">Registrar venta</h2>
+            <form id="form-venta" class="formulario" novalidate>
+                <div class="campo">
+                    <label for="cliente-id">Cliente</label>
+                    <select id="cliente-id" name="clienteId" required aria-describedby="ayuda-cliente error-clienteId"><option value="">Cargando clientes…</option></select>
+                    <p class="campo__ayuda" id="ayuda-cliente">Debe estar registrado en Clientes.</p>
+                    <p class="campo__error" id="error-clienteId" hidden></p>
+                </div>
+                <div class="campo">
+                    <label for="vehiculo-id">Vehículo</label>
+                    <select id="vehiculo-id" name="vehiculoId" required aria-describedby="ayuda-vehiculo error-vehiculoId"><option value="">Cargando vehículos…</option></select>
+                    <p class="campo__ayuda" id="ayuda-vehiculo">Solo aparecen los vehículos disponibles.</p>
+                    <p class="campo__error" id="error-vehiculoId" hidden></p>
+                </div>
+                <button type="submit" data-texto-envio="Registrando…">Registrar venta</button>
+            </form>
+            <p id="mensaje-ventas" class="mensaje" role="status" aria-live="polite"></p>
+        </section>
+        <section class="panel tabla-panel" aria-labelledby="titulo-tabla-ventas">
+            <div class="titulo-seccion">
+                <h2 id="titulo-tabla-ventas">Ventas registradas</h2>
+                <button id="recargar-ventas" class="secundario" type="button">Actualizar</button>
             </div>
-            <button id="recargar-ventas" class="secundario" type="button">Actualizar</button>
-        </div>
-        <div class="tabla-contenedor" aria-live="polite">
-            <table>
-                <thead><tr><th>Fecha</th><th>Cliente</th><th>Vehículo</th><th>Descuento</th><th>Total</th></tr></thead>
-                <tbody id="tabla-ventas"></tbody>
-            </table>
-        </div>
-    </section>
+            <dl class="resumen-operativo" aria-label="Resumen de ventas">
+                <div><dt>Ventas</dt><dd id="resumen-total-ventas">—</dd></div>
+                <div><dt>Total vendido</dt><dd id="resumen-monto-ventas">—</dd></div>
+                <div><dt>En mantenimiento</dt><dd id="resumen-mantenimiento">—</dd></div>
+            </dl>
+            <div class="tabla-contenedor" role="region" aria-labelledby="titulo-tabla-ventas" tabindex="0" aria-live="polite" aria-busy="true">
+                <table>
+                    <caption class="sr-only">Ventas con fecha, cliente, vehículo, descuento y total</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Fecha</th>
+                            <th scope="col">Cliente</th>
+                            <th scope="col">Vehículo</th>
+                            <th class="num" scope="col">Descuento</th>
+                            <th class="num" scope="col">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-ventas">
+                        <tr class="estado-tabla"><td colspan="5"><p class="estado-tabla__texto">Cargando ventas…</p></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
 </main>
 </body>
 </html>

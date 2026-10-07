@@ -3,12 +3,13 @@ package com.autodrive.motors.web;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
-/**
- * Entrega las vistas HTML. Los datos se solicitan desde JavaScript a la API
- * REST; así se mantiene una separación clara entre MVC web y API.
- */
 @Controller
 public class VistaController {
+
+    @GetMapping("/login")
+    public String login() {
+        return "login";
+    }
 
     @GetMapping("/")
     public String inicio() {
@@ -28,5 +29,10 @@ public class VistaController {
     @GetMapping("/ventas")
     public String ventas() {
         return "ventas";
+    }
+
+    @GetMapping("/mantenimientos")
+    public String mantenimientos() {
+        return "mantenimientos";
     }
 }

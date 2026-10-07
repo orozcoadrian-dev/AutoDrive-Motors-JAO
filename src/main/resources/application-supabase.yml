@@ -1,0 +1,26 @@
+spring:
+  config:
+    activate:
+      on-profile: supabase
+  datasource:
+    url: ${SUPABASE_DB_URL}
+    username: ${SUPABASE_DB_USER}
+    password: ${SUPABASE_DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+    locations: classpath:db/migration,classpath:db/migration-postgresql
+    baseline-on-migrate: true
+
+server:
+  address: ${AUTODRIVE_SERVER_ADDRESS:127.0.0.1}
+  error:
+    include-message: never
+  servlet:
+    session:
+      cookie:
+        secure: ${AUTODRIVE_SESSION_COOKIE_SECURE:false}

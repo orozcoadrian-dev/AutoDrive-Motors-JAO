@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="es" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>AutoDrive Motors | Acceso administrador</title>
+    <link rel="stylesheet" href="/css/app.css">
+</head>
+<body class="login-pagina">
+<main class="login-panel" aria-labelledby="login-titulo">
+    <a class="marca" href="/login" aria-label="AutoDrive Motors, acceso administrador"><span class="marca__monograma">AD</span>AutoDrive <span>Motors</span></a>
+    <p class="eyebrow eyebrow--amarillo">Área restringida</p>
+    <h1 id="login-titulo">Acceso administrador</h1>
+    <p class="ayuda">Ingrese con la cuenta de administrador para gestionar clientes, inventario, ventas y mantenimientos.</p>
+    <p th:if="${param.error}" class="mensaje error" role="alert">Usuario o contraseña inválidos.</p>
+    <p th:if="${param.logout}" class="mensaje exito" role="status">La sesión se cerró correctamente.</p>
+    <form class="formulario" th:action="@{/login}" method="post" autocomplete="on">
+        <div class="campo">
+            <label for="username">Usuario</label>
+            <input id="username" name="username" type="text" required autofocus autocomplete="username" autocapitalize="none" spellcheck="false">
+        </div>
+        <div class="campo">
+            <label for="password">Contraseña</label>
+            <input id="password" name="password" type="password" required autocomplete="current-password">
+        </div>
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+        <button type="submit">Iniciar sesión</button>
+    </form>
+    <p class="login-panel__nota">La sesión se cierra tras 30 minutos sin actividad.</p>
+</main>
+</body>
+</html>

@@ -1,0 +1,163 @@
+{
+  "info": {
+    "_postman_id": "a3f2c8c8-8f6d-4cd6-a2e0-autodrive-motors",
+    "name": "AutoDrive Motors JAO",
+    "description": "Pruebas manuales de la API REST. Ejecute primero Autenticación; luego Clientes y Vehículos antes de crear una venta o mantenimiento.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "clienteId", "value": "1" },
+    { "key": "vehiculoId", "value": "1" },
+    { "key": "ventaId", "value": "1" },
+    { "key": "mantenimientoId", "value": "1" },
+    { "key": "adminUser", "value": "" },
+    { "key": "adminPassword", "value": "" },
+    { "key": "csrfToken", "value": "" },
+    { "key": "csrfHeader", "value": "X-CSRF-TOKEN" }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "exec": [
+          "const metodo = pm.request.method.toUpperCase();",
+          "if (![\"GET\", \"HEAD\", \"OPTIONS\"].includes(metodo) && pm.collectionVariables.get('csrfToken')) {",
+          "  pm.request.headers.upsert({ key: pm.collectionVariables.get('csrfHeader'), value: pm.collectionVariables.get('csrfToken') });",
+          "}"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "Autenticación",
+      "item": [
+        {
+          "name": "Abrir login y obtener CSRF",
+          "request": { "method": "GET", "url": "{{baseUrl}}/login" },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('200 OK', () => pm.response.to.have.status(200));", "const coincidencia = pm.response.text().match(/name=\\\"_csrf\\\"[^>]*value=\\\"([^\\\"]+)\\\"/);", "if (!coincidencia) throw new Error('No se encontró el token CSRF en el formulario de login.');", "pm.collectionVariables.set('csrfToken', coincidencia[1]);", "pm.collectionVariables.set('csrfHeader', 'X-CSRF-TOKEN');"] } }]
+        },
+        {
+          "name": "Iniciar sesión de administrador",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/x-www-form-urlencoded" }],
+            "body": { "mode": "urlencoded", "urlencoded": [{ "key": "username", "value": "{{adminUser}}" }, { "key": "password", "value": "{{adminPassword}}" }, { "key": "_csrf", "value": "{{csrfToken}}" }] },
+            "url": "{{baseUrl}}/login"
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Login redirige correctamente', () => pm.expect(pm.response.code).to.be.oneOf([200, 302]));"] } }]
+        },
+        {
+          "name": "Renovar token CSRF autenticado",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/sesion/csrf" },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('200 OK', () => pm.response.to.have.status(200));", "const csrf = pm.response.json();", "pm.collectionVariables.set('csrfToken', csrf.token);", "pm.collectionVariables.set('csrfHeader', csrf.headerName);"] } }]
+        }
+      ]
+    },
+    {
+      "name": "Clientes",
+      "item": [
+        {
+          "name": "Listar clientes",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/clientes" },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('200 OK', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Registrar cliente",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"nombre\": \"Laura\",\n  \"apellido\": \"Martinez\",\n  \"documento\": \"1000000100\",\n  \"email\": \"laura.martinez@example.test\",\n  \"telefono\": \"3005551122\"\n}" },
+            "url": "{{baseUrl}}/api/clientes"
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('201 Created', () => pm.response.to.have.status(201));", "if (pm.response.code === 201) pm.collectionVariables.set('clienteId', pm.response.json().id);"] } }]
+        },
+        {
+          "name": "Consultar cliente por id",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/clientes/{{clienteId}}" }
+        },
+        {
+          "name": "Actualizar cliente",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"nombre\": \"Laura\",\n  \"apellido\": \"Martinez\",\n  \"documento\": \"1000000100\",\n  \"email\": \"laura.martinez@example.test\",\n  \"telefono\": \"3005551199\"\n}" },
+            "url": "{{baseUrl}}/api/clientes/{{clienteId}}"
+          }
+        },
+        { "name": "Eliminar cliente sin ventas", "request": { "method": "DELETE", "url": "{{baseUrl}}/api/clientes/{{clienteId}}" } }
+      ]
+    },
+    {
+      "name": "Vehículos",
+      "item": [
+        {
+          "name": "Listar vehículos",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/vehiculos" }
+        },
+        {
+          "name": "Registrar vehículo",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"placa\": \"TST001\",\n  \"marca\": \"Suzuki\",\n  \"modelo\": \"Swift\",\n  \"anio\": 2024,\n  \"precioCop\": 80000000\n}" },
+            "url": "{{baseUrl}}/api/vehiculos"
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('201 Created', () => pm.response.to.have.status(201));", "if (pm.response.code === 201) pm.collectionVariables.set('vehiculoId', pm.response.json().id);"] } }]
+        },
+        { "name": "Consultar vehículo por id", "request": { "method": "GET", "url": "{{baseUrl}}/api/vehiculos/{{vehiculoId}}" } },
+        { "name": "Vehículos disponibles", "request": { "method": "GET", "url": "{{baseUrl}}/api/vehiculos/disponibles" } },
+        { "name": "Filtrar por marca", "request": { "method": "GET", "url": "{{baseUrl}}/api/vehiculos/marca/Suzuki" } },
+        {
+          "name": "Actualizar vehículo",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"placa\": \"TST001\",\n  \"marca\": \"Suzuki\",\n  \"modelo\": \"Swift Hybrid\",\n  \"anio\": 2024,\n  \"precioCop\": 85000000\n}" },
+            "url": "{{baseUrl}}/api/vehiculos/{{vehiculoId}}"
+          }
+        },
+        { "name": "Convertir vehículo a USD", "request": { "method": "GET", "url": "{{baseUrl}}/api/vehiculos/{{vehiculoId}}/conversion-usd" } },
+        { "name": "Eliminar vehículo sin relaciones", "request": { "method": "DELETE", "url": "{{baseUrl}}/api/vehiculos/{{vehiculoId}}" } }
+      ]
+    },
+    {
+      "name": "Ventas y reportes",
+      "item": [
+        {
+          "name": "Registrar venta",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"clienteId\": {{clienteId}},\n  \"vehiculoId\": {{vehiculoId}}\n}" },
+            "url": "{{baseUrl}}/api/ventas"
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('201 Created', () => pm.response.to.have.status(201));", "if (pm.response.code === 201) pm.collectionVariables.set('ventaId', pm.response.json().id);"] } }]
+        },
+        { "name": "Listar ventas", "request": { "method": "GET", "url": "{{baseUrl}}/api/ventas" } },
+        { "name": "Consultar venta por id", "request": { "method": "GET", "url": "{{baseUrl}}/api/ventas/{{ventaId}}" } },
+        { "name": "Resumen operativo", "request": { "method": "GET", "url": "{{baseUrl}}/api/reportes/resumen" } }
+      ]
+    },
+    {
+      "name": "Mantenimientos y tasa",
+      "item": [
+        {
+          "name": "Registrar mantenimiento",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"vehiculoId\": {{vehiculoId}},\n  \"fechaMantenimiento\": \"2026-10-07\",\n  \"descripcion\": \"Cambio de aceite y revisión de frenos\",\n  \"costo\": 320000\n}" },
+            "url": "{{baseUrl}}/api/mantenimientos"
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('201 Created', () => pm.response.to.have.status(201));", "if (pm.response.code === 201) pm.collectionVariables.set('mantenimientoId', pm.response.json().id);"] } }]
+        },
+        { "name": "Listar mantenimientos", "request": { "method": "GET", "url": "{{baseUrl}}/api/mantenimientos" } },
+        { "name": "Historial por vehículo", "request": { "method": "GET", "url": "{{baseUrl}}/api/mantenimientos?vehiculoId={{vehiculoId}}" } },
+        { "name": "Consultar mantenimiento por id", "request": { "method": "GET", "url": "{{baseUrl}}/api/mantenimientos/{{mantenimientoId}}" } },
+        { "name": "Consultar tasa USD a COP", "request": { "method": "GET", "url": "{{baseUrl}}/api/tasa-cambio" } }
+      ]
+    }
+  ]
+}
