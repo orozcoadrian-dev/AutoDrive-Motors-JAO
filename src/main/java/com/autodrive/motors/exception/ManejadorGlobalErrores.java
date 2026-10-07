@@ -1,13 +1,17 @@
 package com.autodrive.motors.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.time.Instant;
 import java.util.stream.Collectors;
@@ -24,6 +28,11 @@ public class ManejadorGlobalErrores {
         return respuesta(HttpStatus.CONFLICT, ex.getMessage(), request);
     }
 
+    @ExceptionHandler(ServicioExternoNoDisponibleException.class)
+    ResponseEntity<ApiError> manejarServicioExterno(ServicioExternoNoDisponibleException ex, HttpServletRequest request) {
+        return respuesta(HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage(), request);
+    }
+
     @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
     ResponseEntity<ApiError> manejarConflictoConcurrente(HttpServletRequest request) {
         return respuesta(HttpStatus.CONFLICT,
@@ -37,6 +46,21 @@ public class ManejadorGlobalErrores {
                 .distinct()
                 .collect(Collectors.joining(", ", "Campos inválidos: ", "."));
         return respuesta(HttpStatus.BAD_REQUEST, mensaje, request);
+    }
+
+    @ExceptionHandler({ConstraintViolationException.class, MethodArgumentTypeMismatchException.class})
+    ResponseEntity<ApiError> manejarParametroInvalido(HttpServletRequest request) {
+        return respuesta(HttpStatus.BAD_REQUEST, "Parámetro de solicitud inválido.", request);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    ResponseEntity<ApiError> manejarJsonInvalido(HttpServletRequest request) {
+        return respuesta(HttpStatus.BAD_REQUEST, "El JSON enviado no es válido.", request);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    ResponseEntity<ApiError> manejarIntegridad(HttpServletRequest request) {
+        return respuesta(HttpStatus.CONFLICT, "La operación entra en conflicto con un registro existente.", request);
     }
 
     @ExceptionHandler(Exception.class)

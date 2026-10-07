@@ -38,7 +38,6 @@ public class Vehiculo {
     @Column(nullable = false, length = 24)
     private EstadoVehiculo estado = EstadoVehiculo.DISPONIBLE;
 
-    /** Evita que dos ventas concurrentes confirmen el mismo vehículo. */
     @Version
     private Long version;
 

@@ -6,4 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface ClienteDao extends JpaRepository<Cliente, Long> {
     boolean existsByEmailIgnoreCase(String email);
     boolean existsByEmailIgnoreCaseAndIdNot(String email, Long id);
+    boolean existsByDocumentoIgnoreCase(String documento);
+    boolean existsByDocumentoIgnoreCaseAndIdNot(String documento, Long id);
 }

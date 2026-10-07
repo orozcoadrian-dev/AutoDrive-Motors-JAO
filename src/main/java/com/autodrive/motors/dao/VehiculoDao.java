@@ -11,4 +11,5 @@ public interface VehiculoDao extends JpaRepository<Vehiculo, Long> {
     boolean existsByPlacaIgnoreCaseAndIdNot(String placa, Long id);
     List<Vehiculo> findByMarcaContainingIgnoreCase(String marca);
     List<Vehiculo> findByEstado(EstadoVehiculo estado);
+    long countByEstado(EstadoVehiculo estado);
 }

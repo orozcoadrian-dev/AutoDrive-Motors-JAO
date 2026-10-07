@@ -25,6 +25,7 @@ public class ClienteService {
 
     public ClienteResponse registrar(ClienteRequest request) {
         validarCorreoUnico(request.email(), null);
+        validarDocumentoUnico(request.documento(), null);
         Cliente cliente = new Cliente();
         aplicar(request, cliente);
         return aRespuesta(clienteDao.save(cliente));
@@ -43,6 +44,7 @@ public class ClienteService {
     public ClienteResponse actualizar(Long id, ClienteRequest request) {
         Cliente cliente = buscar(id);
         validarCorreoUnico(request.email(), id);
+        validarDocumentoUnico(request.documento(), id);
         aplicar(request, cliente);
         return aRespuesta(clienteDao.save(cliente));
     }
@@ -70,15 +72,26 @@ public class ClienteService {
         }
     }
 
+    private void validarDocumentoUnico(String documento, Long idActual) {
+        String documentoNormalizado = documento.trim().toUpperCase();
+        boolean repetido = idActual == null
+                ? clienteDao.existsByDocumentoIgnoreCase(documentoNormalizado)
+                : clienteDao.existsByDocumentoIgnoreCaseAndIdNot(documentoNormalizado, idActual);
+        if (repetido) {
+            throw new ReglaNegocioException("Ya existe un cliente registrado con ese documento.");
+        }
+    }
+
     private void aplicar(ClienteRequest request, Cliente cliente) {
         cliente.setNombre(request.nombre().trim());
         cliente.setApellido(request.apellido().trim());
+        cliente.setDocumento(request.documento().trim().toUpperCase());
         cliente.setEmail(request.email().trim().toLowerCase());
         cliente.setTelefono(request.telefono().trim());
     }
 
     private ClienteResponse aRespuesta(Cliente cliente) {
-        return new ClienteResponse(cliente.getId(), cliente.getNombre(), cliente.getApellido(), cliente.getEmail(),
+        return new ClienteResponse(cliente.getId(), cliente.getNombre(), cliente.getApellido(), cliente.getDocumento(), cliente.getEmail(),
                 cliente.getTelefono(), cliente.getFechaRegistro());
     }
 }

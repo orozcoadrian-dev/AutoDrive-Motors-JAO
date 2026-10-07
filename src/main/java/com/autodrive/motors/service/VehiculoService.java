@@ -2,6 +2,7 @@ package com.autodrive.motors.service;
 
 import com.autodrive.motors.dao.VehiculoDao;
 import com.autodrive.motors.dao.VentaDao;
+import com.autodrive.motors.dao.MantenimientoDao;
 import com.autodrive.motors.dto.VehiculoRequest;
 import com.autodrive.motors.dto.VehiculoResponse;
 import com.autodrive.motors.exception.ReglaNegocioException;
@@ -18,10 +19,12 @@ import java.util.List;
 public class VehiculoService {
     private final VehiculoDao vehiculoDao;
     private final VentaDao ventaDao;
+    private final MantenimientoDao mantenimientoDao;
 
-    public VehiculoService(VehiculoDao vehiculoDao, VentaDao ventaDao) {
+    public VehiculoService(VehiculoDao vehiculoDao, VentaDao ventaDao, MantenimientoDao mantenimientoDao) {
         this.vehiculoDao = vehiculoDao;
         this.ventaDao = ventaDao;
+        this.mantenimientoDao = mantenimientoDao;
     }
 
     public VehiculoResponse registrar(VehiculoRequest request) {
@@ -63,6 +66,9 @@ public class VehiculoService {
         Vehiculo vehiculo = buscar(id);
         if (ventaDao.countByVehiculoId(id) > 0) {
             throw new ReglaNegocioException("No se puede eliminar un vehículo con una venta registrada.");
+        }
+        if (mantenimientoDao.countByVehiculoId(id) > 0) {
+            throw new ReglaNegocioException("No se puede eliminar un vehículo con mantenimientos registrados.");
         }
         vehiculoDao.delete(vehiculo);
     }

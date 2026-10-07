@@ -1,0 +1,7 @@
+ALTER TABLE clientes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE vehiculos ENABLE ROW LEVEL SECURITY;
+ALTER TABLE ventas ENABLE ROW LEVEL SECURITY;
+ALTER TABLE mantenimientos ENABLE ROW LEVEL SECURITY;
+
+REVOKE ALL ON TABLE clientes, vehiculos, ventas, mantenimientos FROM anon, authenticated;
+REVOKE ALL ON ALL SEQUENCES IN SCHEMA public FROM anon, authenticated;

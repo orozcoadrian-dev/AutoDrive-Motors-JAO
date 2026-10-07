@@ -1,0 +1,2 @@
+ALTER TABLE vehiculos
+    ADD COLUMN version BIGINT NOT NULL DEFAULT 0;
