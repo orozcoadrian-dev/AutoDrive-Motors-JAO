@@ -7,7 +7,7 @@ Sistema de Gestión Vehicular para el taller final de Análisis y Diseño de Sof
 - Clientes: registro, consulta, actualización y eliminación; documento y correo únicos.
 - Vehículos: CRUD, placa única, búsqueda por marca, disponibilidad y estados.
 - Ventas: asociación cliente–vehículo, fecha automática, descuento del 5 % para valores superiores a 100.000.000 COP y protección contra ventas duplicadas.
-- Mantenimientos: registro e historial; un vehículo con mantenimiento queda en estado `EN_MANTENIMIENTO` y no se ofrece en ventas.
+- Mantenimientos: registro e historial; un vehículo con mantenimiento queda en estado `EN_MANTENIMIENTO` y no se ofrece en ventas. Al terminar, `PATCH /api/vehiculos/{id}/finalizar-mantenimiento` lo devuelve a `DISPONIBLE`.
 - Reporte REST: resumen de ventas, total vendido y vehículos por estado.
 - Moneda: consulta de tasa USD→COP y conversión de un vehículo COP→USD.
 - Persistencia: JPA/Hibernate, migración PostgreSQL versionada por Flyway y perfil para Supabase.
@@ -69,7 +69,7 @@ En el primer arranque, Flyway ejecuta `src/main/resources/db/migration/V1__creat
 | Recurso | Operaciones |
 |---|---|
 | `/api/clientes` | `GET`, `GET /{id}`, `POST`, `PUT /{id}`, `DELETE /{id}` |
-| `/api/vehiculos` | `GET`, `GET /{id}`, `POST`, `PUT /{id}`, `DELETE /{id}`, `GET /disponibles`, `GET /marca/{marca}` |
+| `/api/vehiculos` | `GET`, `GET /{id}`, `POST`, `PUT /{id}`, `DELETE /{id}`, `GET /disponibles`, `GET /marca/{marca}`, `PATCH /{id}/finalizar-mantenimiento` |
 | `/api/ventas` | `GET`, `GET /{id}`, `POST` |
 | `/api/mantenimientos` | `GET`, `GET /{id}`, `GET ?vehiculoId={id}`, `POST` |
 | `/api/reportes/resumen` | `GET` |
