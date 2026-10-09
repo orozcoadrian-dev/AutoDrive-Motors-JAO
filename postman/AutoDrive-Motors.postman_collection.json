@@ -119,6 +119,7 @@
           }
         },
         { "name": "Convertir vehículo a USD", "request": { "method": "GET", "url": "{{baseUrl}}/api/vehiculos/{{vehiculoId}}/conversion-usd" } },
+        { "name": "Finalizar mantenimiento (vuelve a Disponible)", "request": { "method": "PATCH", "url": "{{baseUrl}}/api/vehiculos/{{vehiculoId}}/finalizar-mantenimiento" } },
         { "name": "Eliminar vehículo sin relaciones", "request": { "method": "DELETE", "url": "{{baseUrl}}/api/vehiculos/{{vehiculoId}}" } }
       ]
     },

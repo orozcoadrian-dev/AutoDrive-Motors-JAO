@@ -62,6 +62,15 @@ public class VehiculoService {
         return aRespuesta(vehiculoDao.save(vehiculo));
     }
 
+    public VehiculoResponse finalizarMantenimiento(Long id) {
+        Vehiculo vehiculo = buscar(id);
+        if (vehiculo.getEstado() != EstadoVehiculo.EN_MANTENIMIENTO) {
+            throw new ReglaNegocioException("Solo un vehículo en mantenimiento puede volver a estar disponible.");
+        }
+        vehiculo.setEstado(EstadoVehiculo.DISPONIBLE);
+        return aRespuesta(vehiculoDao.save(vehiculo));
+    }
+
     public void eliminar(Long id) {
         Vehiculo vehiculo = buscar(id);
         if (ventaDao.countByVehiculoId(id) > 0) {
