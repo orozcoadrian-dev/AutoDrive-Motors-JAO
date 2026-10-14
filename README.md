@@ -7,7 +7,7 @@ Sistema de Gestión Vehicular para el taller final de Análisis y Diseño de Sof
 - Clientes: registro, consulta, actualización y eliminación; documento y correo únicos.
 - Vehículos: CRUD, placa única, búsqueda por marca, disponibilidad y estados.
 - Ventas: asociación cliente–vehículo, fecha automática, descuento del 5 % para valores superiores a 100.000.000 COP y protección contra ventas duplicadas.
-- Mantenimientos: registro e historial; un vehículo con mantenimiento queda en estado `EN_MANTENIMIENTO` y no se ofrece en ventas. Al terminar, `PATCH /api/vehiculos/{id}/finalizar-mantenimiento` lo devuelve a `DISPONIBLE`.
+- Mantenimientos: registro e historial; un vehículo con mantenimiento queda en estado `EN_MANTENIMIENTO` y no se ofrece en ventas. Al terminar, `PATCH /api/vehiculos/{id}/finalizar-mantenimiento` lo devuelve a `DISPONIBLE`; en la vista de Inventario esto es el botón **Finalizar mantenimiento** de cada fila.
 - Reporte REST: resumen de ventas, total vendido y vehículos por estado.
 - Moneda: consulta de tasa USD→COP y conversión de un vehículo COP→USD.
 - Persistencia: JPA/Hibernate, migración PostgreSQL versionada por Flyway y perfil para Supabase.

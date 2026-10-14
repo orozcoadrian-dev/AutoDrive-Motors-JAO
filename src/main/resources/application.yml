@@ -3,8 +3,6 @@ spring:
     name: autodrive-motors
   profiles:
     default: dev
-  thymeleaf:
-    cache: false
 
 autodrive:
   seguridad:

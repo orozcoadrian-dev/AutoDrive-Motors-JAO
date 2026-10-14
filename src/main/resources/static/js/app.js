@@ -327,6 +327,26 @@ function botonConversionUsd(vehiculo) {
     return boton;
 }
 
+function botonFinalizarMantenimiento(vehiculo, onSuccess) {
+    const boton = document.createElement("button");
+    boton.type = "button";
+    boton.className = "enlace-boton";
+    boton.textContent = "Finalizar mantenimiento";
+    boton.setAttribute("aria-label", `Finalizar el mantenimiento del vehículo ${vehiculo.placa}`);
+    boton.addEventListener("click", async () => {
+        boton.disabled = true;
+        try {
+            await solicitar(`/api/vehiculos/${vehiculo.id}/finalizar-mantenimiento`, { method: "PATCH" });
+            mostrarMensaje("mensaje-vehiculos", `${vehiculo.placa}: mantenimiento finalizado, el vehículo vuelve a estar disponible.`, "exito");
+            await onSuccess();
+        } catch (error) {
+            mostrarMensaje("mensaje-vehiculos", error.message, "error");
+            boton.disabled = false;
+        }
+    });
+    return boton;
+}
+
 async function cargarClientes() {
     const cuerpo = document.getElementById("tabla-clientes");
     if (!cuerpo) return [];
@@ -387,6 +407,9 @@ async function cargarVehiculos(marca = "") {
             agregarCelda(fila, "").replaceChildren(crearEstado(vehiculo.estado));
             const acciones = agregarCelda(fila, "", "acciones");
             acciones.replaceChildren(botonConversionUsd(vehiculo));
+            if (vehiculo.estado === "EN_MANTENIMIENTO") {
+                acciones.append(botonFinalizarMantenimiento(vehiculo, () => cargarVehiculos(marca)));
+            }
             if (vehiculo.estado === "DISPONIBLE") {
                 acciones.append(botonEliminar(`/api/vehiculos/${vehiculo.id}`, `el vehículo ${vehiculo.placa}`, () => cargarVehiculos(marca), "mensaje-vehiculos"));
             }
