@@ -2,6 +2,8 @@ package com.autodrive.motors.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -18,6 +20,8 @@ import java.util.stream.Collectors;
 
 @RestControllerAdvice(basePackages = "com.autodrive.motors.api")
 public class ManejadorGlobalErrores {
+    private static final Logger log = LoggerFactory.getLogger(ManejadorGlobalErrores.class);
+
     @ExceptionHandler(RecursoNoEncontradoException.class)
     ResponseEntity<ApiError> manejarNoEncontrado(RecursoNoEncontradoException ex, HttpServletRequest request) {
         return respuesta(HttpStatus.NOT_FOUND, ex.getMessage(), request);
@@ -59,12 +63,17 @@ public class ManejadorGlobalErrores {
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    ResponseEntity<ApiError> manejarIntegridad(HttpServletRequest request) {
+    ResponseEntity<ApiError> manejarIntegridad(DataIntegrityViolationException ex, HttpServletRequest request) {
+        // Solo el tipo de la causa: el mensaje de la base de datos puede traer valores del cliente (correo, documento).
+        log.warn("Integridad de datos violada en {} {}: {}", request.getMethod(), request.getRequestURI(),
+                ex.getMostSpecificCause().getClass().getSimpleName());
         return respuesta(HttpStatus.CONFLICT, "La operación entra en conflicto con un registro existente.", request);
     }
 
     @ExceptionHandler(Exception.class)
-    ResponseEntity<ApiError> manejarInesperado(Exception ignored, HttpServletRequest request) {
+    ResponseEntity<ApiError> manejarInesperado(Exception ex, HttpServletRequest request) {
+        // El cliente recibe un mensaje genérico; el detalle queda solo en el log del servidor.
+        log.error("Error inesperado en {} {}", request.getMethod(), request.getRequestURI(), ex);
         return respuesta(HttpStatus.INTERNAL_SERVER_ERROR, "Ocurrió un error inesperado.", request);
     }
 
